@@ -1,4 +1,43 @@
 {
-	"app_id": "APP_ID",
-	"api_key": "API_KEY"
+	"account": {
+		"app_id": "APP_ID",
+		"api_key": "API_KEY"
+	},
+	"bulkLimit": 50,
+	"defaultProfile": "intercom",
+	"profiles": {
+		"intercom": {
+			"type": "csv",
+			"firstRowIsHeaders": true,
+			"fieldmapping": {
+				"email": "{Email}",
+				"user_id": "{User ID}",
+				"name": "{Name}",
+				"tags": "{Tags}",
+				"created_at": "{T:Signed up}",
+				"last_request_at": "{T:Last seen}",
+				"company": "{Company}",
+				"language_preference": "{CUSTOM:Language}",
+				"subscription": "{CUSTOM:Subscription}"
+			}
+		},
+		"mailchimp": {
+			"type": "csv",
+			"firstRowIsHeaders": true,
+			"fieldmapping": {
+				"email": "{Email Address}",
+				"name": "{First Name} {Last Name}",
+				"company": "{Company}"
+			}
+		},
+		"mongohq": {
+			"type": "json",
+			"fieldmapping": {
+				"email": "{email}",
+				"user_id": "{_id}",
+				"created_at": "{T:dateCreated}",
+				"subscription_expires_at": "{CUSTOM:T:expires}"
+			}
+		}
+	}
 }
