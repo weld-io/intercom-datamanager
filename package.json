@@ -22,18 +22,12 @@
   ],
   "main": "lib/intercom-datamanager",
   "scripts": {
-    "start": "node lib/intercom-datamanager",
-    "test": "grunt nodeunit"
+    "start": "node lib/intercom-datamanager"
   },
   "engines": {
     "node": ">= 0.8.0"
   },
-  "devDependencies": {
-    "grunt": "~0.4.2",
-    "grunt-contrib-jshint": "~0.6.4",
-    "grunt-contrib-nodeunit": "~0.2.0",
-    "grunt-contrib-watch": "~0.5.3"
-  },
+  "devDependencies": {},
   "keywords": [],
   "dependencies": {
     "csv-parse": "0.0.6",
