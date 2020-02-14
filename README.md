@@ -4,7 +4,8 @@ Command line tool for Intercom.io data management.
 
 ## Usage
 
-	node intercom-datamanager ../data/test.csv profile=intercom test=true
+	yarn start ../data/id.csv profile=intercom test=true
+	# or: node lib/intercom-datamanager ../data/id.csv profile=intercom test=true
 
 ## References
 
