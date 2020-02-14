@@ -29,14 +29,15 @@
     "node": ">= 0.8.0"
   },
   "devDependencies": {
+    "grunt": "~0.4.2",
     "grunt-contrib-jshint": "~0.6.4",
     "grunt-contrib-nodeunit": "~0.2.0",
-    "grunt-contrib-watch": "~0.5.3",
-    "grunt": "~0.4.2"
+    "grunt-contrib-watch": "~0.5.3"
   },
   "keywords": [],
   "dependencies": {
-    "intercom.io": "~1.0.1",
-    "csv-parse": "0.0.6"
+    "csv-parse": "0.0.6",
+    "dotenv": "^8.2.0",
+    "intercom.io": "~1.0.1"
   }
 }
