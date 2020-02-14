@@ -1,7 +1,7 @@
 {
 	"account": {
-		"app_id": "APP_ID",
-		"api_key": "API_KEY"
+		"appId": "vm7v61kc",
+		"apiKey": "9f2c0bd716ebde875e7580c26278175c651d729f"
 	},
 	"bulkLimit": 50,
 	"defaultProfile": "intercom",
@@ -18,6 +18,11 @@
 				"last_request_at": "{T:Last seen}",
 				"company": "{Company}",
 				"language_preference": "{CUSTOM:Language}",
+				"last_project": "{CUSTOM:last_project}",
+				"last_project_title": "{CUSTOM:last_project_title}",
+				"last_domain": "{CUSTOM:last_domain}",
+				"last_domain_status": "{CUSTOM:last_domain_status}",
+				"weekly_visitor_graph": "{CUSTOM:weekly_visitor_graph}",
 				"subscription": "{CUSTOM:Subscription}"
 			}
 		},
