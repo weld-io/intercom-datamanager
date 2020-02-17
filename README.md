@@ -2,18 +2,33 @@
 
 Command line tool for Intercom.io data management.
 
+
 ## Usage
+
+Setup:
+
+- Set `INTERCOM_PERSONAL_ACCESS_TOKEN` in `.env` file or with `export INTERCOM_PERSONAL_ACCESS_TOKEN=`.
+
+Run:
 
 	yarn start ../data/id.csv profile=intercom test=true verbose=true
 	# or: node app/intercom-datamanager ../data/id.csv profile=intercom test=true verbose=true
+
+
+## Configuration
+
+- `fieldmapping`:
+	- Prefix `T:` for time/date fields e.g. `"created_at": "{T:Signed up}"`
+	- Prefix `CUSTOM:` for `custom_attributes` fields e.g. `"last_domain": "{CUSTOM:last_domain}"`
+
 
 ## References
 
 https://github.com/tarunc/intercom.io
 
-http://doc.intercom.io/api/#bulk-user-creation
+### Intercom fields
 
-## Intercom fields
+http://doc.intercom.io/api/#bulk-user-creation
 
 * `user_id`	(yes if no email)	a unique string identifier for the user. It is required on creation if an email is not supplied.
 * `email`	(yes if no user_id)	the user’s email address. It is required on creation if a user_id is not supplied.
@@ -51,7 +66,7 @@ http://doc.intercom.io/api/#bulk-user-creation
 		console.log('Intercom:', err, res);
 	});
 
-## MailChimp fields
+### MailChimp fields
 
 * "Email Address"
 * "First Name"
