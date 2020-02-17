@@ -10,7 +10,7 @@
 
 require('dotenv').config()
 
-const { processCommandLineArguments, mapColumnArrayToObjectArray, doInChunks } = require('../lib/objects')
+const { processCommandLineArguments, mapColumnArrayToObjectArray, doInChunks, get } = require('../lib/objects')
 const { generateCompanyIdFromName } = require('../lib/contactInfo')
 const { updateIntercomUsers, updateIntercomTags } = require('../lib/intercom')
 const config = require('../lib/config')
@@ -21,70 +21,74 @@ const getImportProfile = function () {
   return config.profiles[currentImportProfile]
 }
 
-// ...
-const remapFields = function (userArray, fieldNamesArray, tagArray) {
-  var resultArray = []
-  for (var r in userArray) {
-    var userObj = {}
-    var custom_attributes = {} // eslint-disable-line camelcase
-    for (var fieldName in getImportProfile().fieldmapping) {
-      var userDataStr = getImportProfile().fieldmapping[fieldName]
-      var isCustomField = false
-      if (userDataStr.indexOf('CUSTOM:') !== -1) {
-        userDataStr = userDataStr.replace('CUSTOM:', '')
+// Remap fields from "any" input format, to Intercom upload format
+const remapFields = function (sourceArray, sourceFieldNamesArray, tagArray) {
+  console.log(`Nr of users: ${sourceArray.length}`)
+  const resultArray = []
+  for (const r in sourceArray) {
+    const sourceArrayRow = sourceArray[r]
+    const destinationRow = {}
+    const custom_attributes = {} // eslint-disable-line camelcase
+    for (const destinationFieldName in getImportProfile().fieldmapping) {
+      let destinationFieldValue = getImportProfile().fieldmapping[destinationFieldName]
+      let isCustomField = false
+      if (destinationFieldValue.indexOf('CUSTOM:') !== -1) {
+        destinationFieldValue = destinationFieldValue.replace('CUSTOM:', '')
         isCustomField = true
       }
-      for (var f in fieldNamesArray) {
-        // Time stamp
-        var dateStr = userArray[r][fieldNamesArray[f]]
-        if (dateStr !== undefined) {
-          userDataStr = userDataStr.replace('{T:' + fieldNamesArray[f] + '}', Math.round(new Date(userArray[r][fieldNamesArray[f]]).getTime() / 1000))
+      // Loop through all fields
+      for (const f in sourceFieldNamesArray) {
+        const sourceFieldName = sourceFieldNamesArray[f]
+        const sourceFieldValue = get(sourceArrayRow, sourceFieldName)
+        if (sourceFieldValue !== undefined) {
+          // Time stamp
+          destinationFieldValue = destinationFieldValue.replace('{T:' + sourceFieldName + '}', Math.round(new Date(sourceFieldValue).getTime() / 1000))
         }
         // String mapping multiple fields e.g. "{First Name} {Last Name}"
-        if (userArray[r][fieldNamesArray[f]] !== undefined) {
-          userDataStr = userDataStr.replace('{' + fieldNamesArray[f] + '}', userArray[r][fieldNamesArray[f]])
+        if (sourceFieldValue !== undefined) {
+          destinationFieldValue = destinationFieldValue.replace('{' + sourceFieldName + '}', sourceFieldValue)
         }
       }
       // Trim space
-      userDataStr = userDataStr.trim()
+      destinationFieldValue = destinationFieldValue.trim()
       // Numeric if numeric
-      if (parseInt(userDataStr) + '' == userDataStr) {
-        userDataStr = parseInt(userDataStr)
+      if (parseInt(destinationFieldValue) + '' == destinationFieldValue) {
+        destinationFieldValue = parseInt(destinationFieldValue)
       }
       // Only use field if data mapping worked, e.g. no {} tags
-      if (userDataStr.indexOf('{') === -1) {
-        userObj[fieldName] = userDataStr
+      if (!(typeof destinationFieldValue === 'string' && destinationFieldValue.includes('{'))) {
+        destinationRow[destinationFieldName] = destinationFieldValue
         // Custom fields
         if (isCustomField) {
-          custom_attributes[fieldName] = userDataStr
-          userObj.custom_attributes = custom_attributes // eslint-disable-line camelcase
-          delete userObj[fieldName]
+          custom_attributes[destinationFieldName] = destinationFieldValue
+          destinationRow.custom_attributes = custom_attributes // eslint-disable-line camelcase
+          delete destinationRow[destinationFieldName]
         }
         // Tags structure
-        if (fieldName == 'tags' && userObj.tags && userObj.tags !== '' && tagArray) {
-          var userTagArray = userObj.tags.split(',')
-          for (var i = 0; i < userTagArray.length; i++) {
+        if (destinationFieldName == 'tags' && destinationRow.tags && destinationRow.tags !== '' && tagArray) {
+          const userTagArray = destinationRow.tags.split(',')
+          for (let i = 0; i < userTagArray.length; i++) {
             tagArray.push({
               name: userTagArray[i],
-              users: [{ email: userObj.email, user_id: userObj.user_id }]
+              users: [{ email: destinationRow.email, user_id: destinationRow.user_id }]
             })
           };
-          delete userObj.tags
+          delete destinationRow.tags
         }
         // Companies structure
-        if (fieldName == 'company' && userObj.company) {
-          userObj.companies = [{ name: userObj.company, id: generateCompanyIdFromName(userObj.company) }]
-          delete userObj.company
+        if (destinationFieldName == 'company' && destinationRow.company) {
+          destinationRow.companies = [{ name: destinationRow.company, id: generateCompanyIdFromName(destinationRow.company) }]
+          delete destinationRow.company
         }
         // Location structure
-        if (fieldName == 'country') {
-          userObj.location_data = [{ type: 'location_data', country_name: userObj.country }]
-          delete userObj.country
+        if (destinationFieldName == 'country') {
+          destinationRow.location_data = [{ type: 'location_data', country_name: destinationRow.country }]
+          delete destinationRow.country
         }
       }
     }
-    // console.log('userObj', userObj);
-    resultArray.push(userObj)
+    // console.log('destinationRow', destinationRow);
+    resultArray.push(destinationRow)
   }
 
   return resultArray
@@ -92,14 +96,14 @@ const remapFields = function (userArray, fieldNamesArray, tagArray) {
 
 // ...
 const parseCsvFile = function (fileName) {
-  var fs = require('fs')
-  var parse = require('csv-parse')
+  const fs = require('fs')
+  const parse = require('csv-parse')
 
-  var parser = parse({ delimiter: ',' }, function (err, data) {
-    var fieldNames = data[0]
-    var userArray = mapColumnArrayToObjectArray(data)
-    var tagArray = []
-    var newUserArray = remapFields(userArray, fieldNames, tagArray)
+  const parser = parse({ delimiter: ',' }, function (err, data) {
+    const userArray = mapColumnArrayToObjectArray(data)
+    const tagArray = []
+    const fieldNames = data[0]
+    const newUserArray = remapFields(userArray, fieldNames, tagArray)
     doInChunks(newUserArray, config.bulkLimit, users => updateIntercomUsers(users, cmdLineArgs))
     if (tagArray.length > 0) {
       updateIntercomTags(tagArray, cmdLineArgs)
@@ -111,10 +115,12 @@ const parseCsvFile = function (fileName) {
 
 // ...
 const parseJsonFile = function (fileName) {
-  fileName = fileName.replace('.json', '')
-  var fieldNames = ['__v', '_id', 'country', 'email', 'externalId', 'hashedPassword', 'name', 'provider', 'role', 'salt', 'subscriptions', 'dateCreated', 'expires']
-  var userArray = require(fileName)
-  var newUserArray = remapFields(userArray, fieldNames)
+  const userArray = require(fileName.replace('.json', ''))
+  const fieldNames = [
+    ...Object.keys(userArray[0]),
+    'hostStatus.statusCode'
+  ]
+  const newUserArray = remapFields(userArray, fieldNames)
   doInChunks(newUserArray, config.bulkLimit, users => updateIntercomUsers(users, cmdLineArgs))
 }
 

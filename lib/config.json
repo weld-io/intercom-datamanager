@@ -39,6 +39,14 @@
 				"created_at": "{T:dateCreated}",
 				"subscription_expires_at": "{CUSTOM:T:expires}"
 			}
+		},
+		"domain-service": {
+			"type": "json",
+			"fieldmapping": {
+				"user_id": "{owner}",
+				"last_domain": "{hostname}",
+				"last_domain_status": "{hostStatus.statusCode}"
+			}
 		}
 	}
 }
