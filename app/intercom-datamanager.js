@@ -100,6 +100,10 @@ const parseCsvFile = function (fileName) {
   const parse = require('csv-parse')
 
   const parser = parse({ delimiter: ',' }, function (err, data) {
+    if (err) {
+      console.error(err)
+      return
+    }
     const userArray = mapColumnArrayToObjectArray(data)
     const tagArray = []
     const fieldNames = data[0]
