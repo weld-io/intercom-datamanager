@@ -24,7 +24,7 @@
     "fix": "standard --fix"
   },
   "dependencies": {
-    "csv-parse": "0.0.6",
+    "csv-parse": "4.4.6",
     "dotenv": "^8.2.0",
     "intercom.io": "~1.0.1"
   },
