@@ -44,6 +44,8 @@ http://doc.intercom.io/api/#bulk-user-creation
 * `update_last_request_at`	(no)	A boolean value, which if true, instructs Intercom to update the users' last_request_at value to the current API service time in UTC. default value if not sent is false.
 * `new_session`	(no)	A boolean value, which if true, instructs Intercom to register the request as a session.
 
+Example:
+
 	intercom.createUser({
 		"email" : "andres@eee",
 		"user_id" : "54184c99a8f840bb0a000003",
@@ -68,31 +70,31 @@ http://doc.intercom.io/api/#bulk-user-creation
 
 ### MailChimp fields
 
-* "Email Address"
-* "First Name"
-* "Last Name"
-* "Company"
-* "Occupation"
-* "Source"
-* "Language"
-* "Cohort"
-* "Custom Message"
-* "Work Role"
-* "Special Groups"
-* "Development Platforms"
-* "MEMBER_RATING"
-* "OPTIN_TIME"
-* "OPTIN_IP"
-* "CONFIRM_TIME"
-* "CONFIRM_IP"
-* "LATITUDE"
-* "LONGITUDE"
-* "GMTOFF"
-* "DSTOFF"
-* "TIMEZONE"
-* "CC"
-* "REGION"
-* "LAST_CHANGED"
-* "LEID"
-* "EUID"
-* "NOTES"
+* `Email Address`
+* `First Name`
+* `Last Name`
+* `Company`
+* `Occupation`
+* `Source`
+* `Language`
+* `Cohort`
+* `Custom Message`
+* `Work Role`
+* `Special Groups`
+* `Development Platforms`
+* `MEMBER_RATING`
+* `OPTIN_TIME`
+* `OPTIN_IP`
+* `CONFIRM_TIME`
+* `CONFIRM_IP`
+* `LATITUDE`
+* `LONGITUDE`
+* `GMTOFF`
+* `DSTOFF`
+* `TIMEZONE`
+* `CC`
+* `REGION`
+* `LAST_CHANGED`
+* `LEID`
+* `EUID`
+* `NOTES`
