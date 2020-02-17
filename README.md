@@ -99,3 +99,8 @@ Example:
 * `LEID`
 * `EUID`
 * `NOTES`
+
+### Stripe fields
+
+https://dashboard.stripe.com/subscriptions?status=active
+

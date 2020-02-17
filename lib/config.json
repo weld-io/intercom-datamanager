@@ -22,6 +22,15 @@
 				"subscription": "{CUSTOM:Subscription}"
 			}
 		},
+		"stripe": {
+			"type": "csv",
+			"firstRowIsHeaders": true,
+			"fieldmapping": {
+				"email": "{Customer Email}",
+				"subscription": "{CUSTOM:Plan}",
+				"subscription_expires_at": "{CUSTOM:T:Current Period End (UTC)}"
+			}
+		},
 		"mailchimp": {
 			"type": "csv",
 			"firstRowIsHeaders": true,
