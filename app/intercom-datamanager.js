@@ -9,6 +9,7 @@
 'use strict'
 
 require('dotenv').config()
+const path = require('path')
 
 const { processCommandLineArguments, mapColumnArrayToObjectArray, doInChunks, get } = require('../lib/objects')
 const { generateCompanyIdFromName } = require('../lib/contactInfo')
@@ -47,7 +48,7 @@ const formatOneRow = function ({ sourceArrayRow, targetFields, sourceFieldNamesA
     // Trim space
     targetFieldValue = targetFieldValue.trim()
     // Numeric if numeric
-    if (parseInt(targetFieldValue) + '' == targetFieldValue) {
+    if (parseInt(targetFieldValue) + '' === targetFieldValue) {
       targetFieldValue = parseInt(targetFieldValue)
     }
     // Only use field if data mapping worked, e.g. no {} tags
@@ -62,7 +63,7 @@ const formatOneRow = function ({ sourceArrayRow, targetFields, sourceFieldNamesA
         delete targetRow[targetFieldName]
       }
       // Tags structure
-      if (targetFieldName == 'tags' && targetRow.tags && targetRow.tags !== '' && tagArray) {
+      if (targetFieldName === 'tags' && targetRow.tags && targetRow.tags !== '' && tagArray) {
         const userTagArray = targetRow.tags.split(',')
         for (let i = 0; i < userTagArray.length; i++) {
           tagArray.push({
@@ -73,12 +74,12 @@ const formatOneRow = function ({ sourceArrayRow, targetFields, sourceFieldNamesA
         delete targetRow.tags
       }
       // Companies structure
-      if (targetFieldName == 'company' && targetRow.company) {
+      if (targetFieldName === 'company' && targetRow.company) {
         targetRow.companies = [{ name: targetRow.company, id: generateCompanyIdFromName(targetRow.company) }]
         delete targetRow.company
       }
       // Location structure
-      if (targetFieldName == 'country') {
+      if (targetFieldName === 'country') {
         targetRow.location_data = [{ type: 'location_data', country_name: targetRow.country }]
         delete targetRow.country
       }
@@ -120,7 +121,7 @@ const parseCsvFile = function (fileName) {
     }
   })
 
-  fs.createReadStream(__dirname + '/' + fileName).pipe(parser)
+  fs.createReadStream(path.join(__dirname, fileName)).pipe(parser)
 }
 
 // ...

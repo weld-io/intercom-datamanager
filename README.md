@@ -11,8 +11,8 @@ Setup:
 
 Run:
 
-	yarn start ../data/id.csv profile=intercom test=true verbose=true
-	# or: node app/intercom-datamanager ../data/id.csv profile=intercom test=true verbose=true
+	yarn start ../data/test.csv profile=intercom test=true verbose=true
+	# or: node app/intercom-datamanager ../data/test.csv profile=intercom test=true verbose=true
 
 
 ## Configuration
