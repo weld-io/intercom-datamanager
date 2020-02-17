@@ -17,9 +17,9 @@
       "url": "https://github.com/weld-io/intercom-datamanager/blob/master/LICENSE-MIT"
     }
   ],
-  "main": "lib/intercom-datamanager",
+  "main": "app/intercom-datamanager",
   "scripts": {
-    "start": "node lib/intercom-datamanager",
+    "start": "node app/intercom-datamanager",
     "lint": "standard",
     "fix": "standard --fix"
   },

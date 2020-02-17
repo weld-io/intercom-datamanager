@@ -10,10 +10,10 @@
 
 require('dotenv').config()
 
-const { processCommandLineArguments, mapColumnArrayToObjectArray, doInChunks } = require('./objects')
-const { generateCompanyIdFromName } = require('./contactInfo')
-const { updateIntercomUsers, updateIntercomTags } = require('./intercom')
-const config = require('./config')
+const { processCommandLineArguments, mapColumnArrayToObjectArray, doInChunks } = require('../lib/objects')
+const { generateCompanyIdFromName } = require('../lib/contactInfo')
+const { updateIntercomUsers, updateIntercomTags } = require('../lib/intercom')
+const config = require('../lib/config')
 
 let currentImportProfile = config.defaultProfile
 
