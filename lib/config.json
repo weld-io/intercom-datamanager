@@ -44,8 +44,8 @@
 			"type": "json",
 			"fieldmapping": {
 				"user_id": "{owner}",
-				"last_domain": "{hostname}",
-				"last_domain_status": "{hostStatus.statusCode}"
+				"last_domain": "{CUSTOM:hostname}",
+				"last_domain_status": "{CUSTOM:hostStatus.statusCode} ({hostStatus.previousStatusCode})"
 			}
 		}
 	}

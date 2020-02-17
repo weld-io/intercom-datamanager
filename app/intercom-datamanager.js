@@ -51,7 +51,9 @@ const formatOneRow = function ({ sourceArrayRow, targetFields, sourceFieldNamesA
       targetFieldValue = parseInt(targetFieldValue)
     }
     // Only use field if data mapping worked, e.g. no {} tags
-    if (!(typeof targetFieldValue === 'string' && targetFieldValue.includes('{'))) {
+    if ((typeof targetFieldValue === 'string' && targetFieldValue.includes('{'))) {
+      console.warn(`Field '${targetFieldName}' has unvalidated data: '${targetFieldValue}'`)
+    } else {
       targetRow[targetFieldName] = targetFieldValue
       // Custom fields
       if (isCustomField) {
@@ -126,8 +128,8 @@ const parseJsonFile = function (fileName) {
   const userArray = require(fileName.replace('.json', ''))
   const fieldNames = [
     ...Object.keys(userArray[0]),
-    'hostStatus.statusCode'
-    // 'hostStatus.previousStatusCode'
+    'hostStatus.statusCode',
+    'hostStatus.previousStatusCode'
   ]
   const newUserArray = remapFields(userArray, fieldNames)
   doInChunks(newUserArray, config.bulkLimit, users => updateIntercomUsers(users, cmdLineArgs))
