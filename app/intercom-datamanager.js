@@ -22,7 +22,7 @@ const getImportProfile = function () {
   return config.profiles[currentImportProfile]
 }
 
-const formatOneRow = function ({ sourceArrayRow, targetFields, sourceFieldNamesArray, tagArray }) {
+const formatOneRow = function ({ index, sourceArrayRow, targetFields, sourceFieldNamesArray, tagArray }) {
   const targetRow = {}
   const custom_attributes = {} // eslint-disable-line camelcase
   for (const targetFieldName in targetFields) {
@@ -52,8 +52,8 @@ const formatOneRow = function ({ sourceArrayRow, targetFields, sourceFieldNamesA
       targetFieldValue = parseInt(targetFieldValue)
     }
     // Only use field if data mapping worked, e.g. no {} tags
-    if ((typeof targetFieldValue === 'string' && targetFieldValue.includes('{'))) {
-      console.warn(`Field '${targetFieldName}' has unvalidated data: '${targetFieldValue}'`)
+    if ((typeof targetFieldValue === 'string' && (targetFieldValue.includes('{') || targetFieldValue.includes('null') || targetFieldValue.includes('undefined')))) {
+      console.warn(`Row ${index + 1}: Field '${targetFieldName}' has unvalidated data: '${targetFieldValue}'`)
     } else {
       targetRow[targetFieldName] = targetFieldValue
       // Custom fields
@@ -90,12 +90,12 @@ const formatOneRow = function ({ sourceArrayRow, targetFields, sourceFieldNamesA
 
 // Remap fields from "any" input format, to Intercom upload format
 const remapFields = function (sourceArray, sourceFieldNamesArray, tagArray) {
-  console.log(`Nr of users: ${sourceArray.length}`)
+  console.log(`Nr of rows: ${sourceArray.length}`)
   const resultArray = []
-  for (const r in sourceArray) {
-    const sourceArrayRow = sourceArray[r]
+  for (let index = 0; index < sourceArray.length; index++) {
+    const sourceArrayRow = sourceArray[index]
     const targetFields = getImportProfile().fieldmapping
-    const targetRow = formatOneRow({ sourceArrayRow, targetFields, sourceFieldNamesArray, tagArray })
+    const targetRow = formatOneRow({ index, sourceArrayRow, targetFields, sourceFieldNamesArray, tagArray })
     resultArray.push(targetRow)
   }
   return resultArray
