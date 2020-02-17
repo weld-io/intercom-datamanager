@@ -1,6 +1,6 @@
 {
   "name": "intercom-datamanager",
-  "description": "Command line tool for Intercom.io data management.",
+  "description": "CLI tool to upload data in CSV/JSON files to Intercom.io",
   "version": "0.1.0",
   "homepage": "https://github.com/weld-io/intercom-datamanager",
   "author": {

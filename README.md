@@ -1,6 +1,6 @@
 # intercom-datamanager
 
-Command line tool for Intercom.io data management.
+CLI tool to upload data in CSV/JSON files to Intercom.io
 
 
 ## Usage
