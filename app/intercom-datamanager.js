@@ -21,76 +21,80 @@ const getImportProfile = function () {
   return config.profiles[currentImportProfile]
 }
 
+const formatOneRow = function ({ sourceArrayRow, targetFields, sourceFieldNamesArray, tagArray }) {
+  const targetRow = {}
+  const custom_attributes = {} // eslint-disable-line camelcase
+  for (const targetFieldName in targetFields) {
+    let targetFieldValue = targetFields[targetFieldName]
+    let isCustomField = false
+    if (targetFieldValue.indexOf('CUSTOM:') !== -1) {
+      targetFieldValue = targetFieldValue.replace('CUSTOM:', '')
+      isCustomField = true
+    }
+    // Loop through all fields
+    for (const f in sourceFieldNamesArray) {
+      const sourceFieldName = sourceFieldNamesArray[f]
+      const sourceFieldValue = get(sourceArrayRow, sourceFieldName)
+      if (sourceFieldValue !== undefined) {
+        // Time stamp
+        targetFieldValue = targetFieldValue.replace('{T:' + sourceFieldName + '}', Math.round(new Date(sourceFieldValue).getTime() / 1000))
+      }
+      // String mapping multiple fields e.g. "{First Name} {Last Name}"
+      if (sourceFieldValue !== undefined) {
+        targetFieldValue = targetFieldValue.replace('{' + sourceFieldName + '}', sourceFieldValue)
+      }
+    }
+    // Trim space
+    targetFieldValue = targetFieldValue.trim()
+    // Numeric if numeric
+    if (parseInt(targetFieldValue) + '' == targetFieldValue) {
+      targetFieldValue = parseInt(targetFieldValue)
+    }
+    // Only use field if data mapping worked, e.g. no {} tags
+    if (!(typeof targetFieldValue === 'string' && targetFieldValue.includes('{'))) {
+      targetRow[targetFieldName] = targetFieldValue
+      // Custom fields
+      if (isCustomField) {
+        custom_attributes[targetFieldName] = targetFieldValue
+        targetRow.custom_attributes = custom_attributes // eslint-disable-line camelcase
+        delete targetRow[targetFieldName]
+      }
+      // Tags structure
+      if (targetFieldName == 'tags' && targetRow.tags && targetRow.tags !== '' && tagArray) {
+        const userTagArray = targetRow.tags.split(',')
+        for (let i = 0; i < userTagArray.length; i++) {
+          tagArray.push({
+            name: userTagArray[i],
+            users: [{ email: targetRow.email, user_id: targetRow.user_id }]
+          })
+        }
+        delete targetRow.tags
+      }
+      // Companies structure
+      if (targetFieldName == 'company' && targetRow.company) {
+        targetRow.companies = [{ name: targetRow.company, id: generateCompanyIdFromName(targetRow.company) }]
+        delete targetRow.company
+      }
+      // Location structure
+      if (targetFieldName == 'country') {
+        targetRow.location_data = [{ type: 'location_data', country_name: targetRow.country }]
+        delete targetRow.country
+      }
+    }
+  }
+  return targetRow
+}
+
 // Remap fields from "any" input format, to Intercom upload format
 const remapFields = function (sourceArray, sourceFieldNamesArray, tagArray) {
   console.log(`Nr of users: ${sourceArray.length}`)
   const resultArray = []
   for (const r in sourceArray) {
     const sourceArrayRow = sourceArray[r]
-    const destinationRow = {}
-    const custom_attributes = {} // eslint-disable-line camelcase
-    for (const destinationFieldName in getImportProfile().fieldmapping) {
-      let destinationFieldValue = getImportProfile().fieldmapping[destinationFieldName]
-      let isCustomField = false
-      if (destinationFieldValue.indexOf('CUSTOM:') !== -1) {
-        destinationFieldValue = destinationFieldValue.replace('CUSTOM:', '')
-        isCustomField = true
-      }
-      // Loop through all fields
-      for (const f in sourceFieldNamesArray) {
-        const sourceFieldName = sourceFieldNamesArray[f]
-        const sourceFieldValue = get(sourceArrayRow, sourceFieldName)
-        if (sourceFieldValue !== undefined) {
-          // Time stamp
-          destinationFieldValue = destinationFieldValue.replace('{T:' + sourceFieldName + '}', Math.round(new Date(sourceFieldValue).getTime() / 1000))
-        }
-        // String mapping multiple fields e.g. "{First Name} {Last Name}"
-        if (sourceFieldValue !== undefined) {
-          destinationFieldValue = destinationFieldValue.replace('{' + sourceFieldName + '}', sourceFieldValue)
-        }
-      }
-      // Trim space
-      destinationFieldValue = destinationFieldValue.trim()
-      // Numeric if numeric
-      if (parseInt(destinationFieldValue) + '' == destinationFieldValue) {
-        destinationFieldValue = parseInt(destinationFieldValue)
-      }
-      // Only use field if data mapping worked, e.g. no {} tags
-      if (!(typeof destinationFieldValue === 'string' && destinationFieldValue.includes('{'))) {
-        destinationRow[destinationFieldName] = destinationFieldValue
-        // Custom fields
-        if (isCustomField) {
-          custom_attributes[destinationFieldName] = destinationFieldValue
-          destinationRow.custom_attributes = custom_attributes // eslint-disable-line camelcase
-          delete destinationRow[destinationFieldName]
-        }
-        // Tags structure
-        if (destinationFieldName == 'tags' && destinationRow.tags && destinationRow.tags !== '' && tagArray) {
-          const userTagArray = destinationRow.tags.split(',')
-          for (let i = 0; i < userTagArray.length; i++) {
-            tagArray.push({
-              name: userTagArray[i],
-              users: [{ email: destinationRow.email, user_id: destinationRow.user_id }]
-            })
-          };
-          delete destinationRow.tags
-        }
-        // Companies structure
-        if (destinationFieldName == 'company' && destinationRow.company) {
-          destinationRow.companies = [{ name: destinationRow.company, id: generateCompanyIdFromName(destinationRow.company) }]
-          delete destinationRow.company
-        }
-        // Location structure
-        if (destinationFieldName == 'country') {
-          destinationRow.location_data = [{ type: 'location_data', country_name: destinationRow.country }]
-          delete destinationRow.country
-        }
-      }
-    }
-    // console.log('destinationRow', destinationRow);
-    resultArray.push(destinationRow)
+    const targetFields = getImportProfile().fieldmapping
+    const targetRow = formatOneRow({ sourceArrayRow, targetFields, sourceFieldNamesArray, tagArray })
+    resultArray.push(targetRow)
   }
-
   return resultArray
 }
 
@@ -123,6 +127,7 @@ const parseJsonFile = function (fileName) {
   const fieldNames = [
     ...Object.keys(userArray[0]),
     'hostStatus.statusCode'
+    // 'hostStatus.previousStatusCode'
   ]
   const newUserArray = remapFields(userArray, fieldNames)
   doInChunks(newUserArray, config.bulkLimit, users => updateIntercomUsers(users, cmdLineArgs))
