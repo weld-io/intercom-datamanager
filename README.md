@@ -18,6 +18,7 @@ Run:
 ## Configuration
 
 - `fieldmapping`:
+	- Format: `"TARGET": "{SOURCE}"`
 	- Prefix `T:` for time/date fields e.g. `"created_at": "{T:Signed up}"`
 	- Prefix `CUSTOM:` for `custom_attributes` fields e.g. `"last_domain": "{CUSTOM:last_domain}"`
 
