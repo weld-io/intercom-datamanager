@@ -11,9 +11,6 @@
     "type": "git",
     "url": "git://github.com/weld-io/intercom-datamanager.git"
   },
-  "bugs": {
-    "url": "https://github.com/weld-io/intercom-datamanager/issues"
-  },
   "licenses": [
     {
       "type": "MIT",
@@ -22,18 +19,16 @@
   ],
   "main": "lib/intercom-datamanager",
   "scripts": {
-    "start": "node lib/intercom-datamanager"
+    "start": "node lib/intercom-datamanager",
+    "lint": "standard",
+    "fix": "standard --fix"
   },
-  "engines": {
-    "node": ">= 0.8.0"
-  },
-  "devDependencies": {
-    "standard": "^14.3.1"
-  },
-  "keywords": [],
   "dependencies": {
     "csv-parse": "0.0.6",
     "dotenv": "^8.2.0",
     "intercom.io": "~1.0.1"
+  },
+  "devDependencies": {
+    "standard": "^14.3.1"
   }
 }
