@@ -151,7 +151,7 @@ const main = function () {
       parseJsonFile(fileName)
     }
   } else {
-    console.log('No import file specified.\nUsage:\nnode intercom-datamanager ../data/users.csv profile=intercom test=true')
+    console.log('No import file specified.\nUsage:\nnode app/upload ../data/test.csv profile=intercom test=true verbose=true')
   }
 }
 
